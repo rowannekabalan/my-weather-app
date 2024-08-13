@@ -1,0 +1,10 @@
+@()
+
+@main("Welcome to Weather App") {
+  <h1>Welcome to Weather App!</h1>
+
+  <form action="/weather" method="get">
+    <label>Enter city name: <input type="search" name="city"></label>
+    <input type="submit" value="Search">
+  </form>
+}
