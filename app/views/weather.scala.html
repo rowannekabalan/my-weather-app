@@ -1,5 +1,8 @@
-@(city: String)
+@import openweathermap.WeatherResponse
+
+@(city: String, response: WeatherResponse)
 
 @main(s"This is the weather in $city") {
   <h1>Weather in @city </h1>
+  <h2> Description: @response.weather.head.description </h2>
 }

@@ -1,13 +1,18 @@
 package controllers
 
+import config.WeatherConfig
+import openweathermap.OpenWeatherMap.{geoCode, getWeather}
 import play.api.libs.ws.WSClient
 import play.api.mvc._
+
+import scala.concurrent.ExecutionContext
+
 
 /**
  * This controller creates an `Action` to handle HTTP requests to the
  * application's home page.
  */
-class HomeController(val controllerComponents: ControllerComponents, ws: WSClient) extends BaseController {
+class HomeController(val controllerComponents: ControllerComponents, ws: WSClient, conf: WeatherConfig)(implicit ec:  ExecutionContext) extends BaseController {
 
   /**
    * Create an Action to render an HTML page.
@@ -20,12 +25,10 @@ class HomeController(val controllerComponents: ControllerComponents, ws: WSClien
     Ok(views.html.index())
   }
 
-  def weather(city: String) = Action { implicit request: Request[AnyContent] =>
-    // fetch the geo location of the city
-    // pass the lon and lat to the weather API
-    // handle the result
-
-
-    Ok(views.html.weather(city))
+  def weather(city: String) = Action.async { implicit request: Request[AnyContent] =>
+   for {
+      (lat, lon) <- geoCode(city, conf.key, ws)
+      response <- getWeather(lat, lon, conf.key, ws)
+    } yield Ok(views.html.weather(city, response))
   }
 }
